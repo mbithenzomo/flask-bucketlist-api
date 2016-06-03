@@ -1,0 +1,4 @@
+*.pyc
+*.js
+*~
+*.DS_Store
