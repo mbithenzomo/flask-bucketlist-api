@@ -1,49 +1,45 @@
-# Define the application directory
 import os
-BASE_DIR = os.path.abspath(os.path.dirname(__file__))
-
-WTF_CSRF_ENABLED = True
-SECRET_KEY = "you-will-never-guess"
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 
-class Config:
-    ''' Common configurations '''
-    # WTF_CSRF_ENABLED = True
-    # SECRET_KEY = "you-will-never-guess"
+class Config(object):
+    """Default configurations """
 
-    @staticmethod
-    def init_app(app):
-        pass
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
+        os.path.join(basedir, 'bucketlist.db')
 
 
 class DevelopmentConfig(Config):
-    '''Config for development '''
+    """Development configurations """
+
     DEBUG = True
-    DEBUG_TB_INTERCEPT_REDIRECTS = False
-
-    # Define database configurations
+    TESTING = True
     SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
-        os.path.join(BASE_DIR, 'data-dev.sqlite')
+        os.path.join(basedir, 'bucketlist.db')
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = "p9Bv<3Eid9%$i01"
 
-    # Enable protection agains *Cross-site Request Forgery (CSRF)*
-    CSRF_ENABLED = True
+
+class TestingConfig(Config):
+    """Test configurations """
+
+    DEBUG = True
+    TESTING = True
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///test.db'
+    SQLALCHEMY_TRACK_MODIFICATIONS = False
 
 
 class ProductionConfig(Config):
-    ''' Config for production '''
-    PORT = int(os.environ.get("PORT", 5000))
-    HOST = '0.0.0.0'
+    """Production configurations """
 
-    # Define database configurations
-    SQLALCHEMY_DATABASE_URI = 'sqlite:///' + \
-        os.path.join(BASE_DIR, 'data-dev.sqlite')
-
-    # Enable protection agains *Cross-site Request Forgery (CSRF)*
-    CSRF_ENABLED = True
-
+    DEBUG = False
+    TESTING = False
+    SQLALCHEMY_DATABASE_URI = 'sqlite:///models/bucketlist.db'
 
 config = {
     'development': DevelopmentConfig,
-    'production': ProductionConfig,
-    'default': DevelopmentConfig
+    'testing': TestingConfig,
+    'production': ProductionConfig
 }
