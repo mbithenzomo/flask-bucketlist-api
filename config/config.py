@@ -38,7 +38,7 @@ class ProductionConfig(Config):
     TESTING = False
     SQLALCHEMY_DATABASE_URI = 'sqlite:///models/bucketlist.db'
 
-config = {
+app_config = {
     'development': DevelopmentConfig,
     'testing': TestingConfig,
     'production': ProductionConfig
