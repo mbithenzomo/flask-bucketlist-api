@@ -1,84 +1,107 @@
-from werkzeug.security import generate_password_hash, check_password_hash
 from flask.ext.login import UserMixin
-from . import db
+from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
+from itsdangerous import (TimedJSONWebSignatureSerializer
+                          as Serializer, BadSignature, SignatureExpired)
+from . import db, app
+# from app.version1.resources import app
 
 
 class User(UserMixin, db.Model):
-    ''' Creates user '''
+    """ Creates user """
 
-    __tablename__ = 'users'
+    __tablename__ = "users"
 
     id = db.Column(db.Integer, primary_key=True)
-    fullname = db.Column(db.String(50))
     username = db.Column(db.String(50), unique=True, index=True)
-    email = db.Column(db.String(100), unique=True)
     password_hash = db.Column(db.String(128))
 
     @property
     def password(self):
-        '''prevents access to password
-        property
-        '''
-        raise AttributeError('password is not a readable attribute.')
+        """
+        Prevents access to password property
+        """
+        raise AttributeError("password is not a readable attribute.")
 
     @password.setter
     def password(self, password):
-        '''Sets password to a hashed password
-        '''
+        """
+        Sets password to a hashed password
+        """
         self.password_hash = generate_password_hash(password)
 
     def verify_password(self, password):
-        '''Checks if password matches
-        '''
+        """
+        Checks if password matches
+        """
         return check_password_hash(self.password_hash, password)
 
+    def generate_auth_token(self, expiration=20000):
+        """
+        Generating an authentication token that expires in 20 minutes
+        """
+        serializer = Serializer(
+            app.config["SECRET_KEY"],
+            expires_in=expiration)
+        return serializer.dumps({"id": self.id})
+
+    @staticmethod
+    def verify_auth_token(token):
+        serializer = Serializer(app.config["SECRET_KEY"])
+        try:
+            data = serializer.loads(token)
+        except SignatureExpired:
+            """When token is valid but expired """
+            return None
+        except BadSignature:
+            """When token is invalid """
+            return None
+        user = User.query.get(data["id"])
+        return user
+
     def __repr__(self):
-        return '<User: %r>' % self.fullname
+        return "<User: %r>" % self.username
 
 
 class Bucketlist(db.Model):
-    ''' Creates bucketlist '''
+    """ Creates bucketlist  """
 
-    __tablename__ = 'bucketlists'
+    __tablename__ = "bucketlists"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(70))
-    ref = id + title
     description = db.Column(db.Text)
-    priority = db.Column(db.String(10))
-    was_added = db.Column(db.DateTime, default=datetime.utcnow)
-    last_edited = db.Column(db.DateTime, default=datetime.utcnow)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_edited = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User',
-                           backref=db.backref('items', lazy='dynamic'))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship("User",
+                           backref=db.backref("users", lazy="dynamic"))
 
     def __repr__(self):
-        return '<Bucketlist: %r>' % self.ref
+        return "<Bucketlist: %r>" % self.title
 
 
 class Item(db.Model):
-    ''' Creates bucketlist item '''
+    """ Creates bucketlist item """
 
-    __tablename__ = 'items'
+    __tablename__ = "items"
 
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(70))
-    ref = id + title
     description = db.Column(db.Text)
-    priority = db.Column(db.String(10))
-    was_added = db.Column(db.DateTime, default=datetime.utcnow)
-    last_edited = db.Column(db.DateTime, default=datetime.utcnow)
+    is_done = db.Column(db.Boolean, default=False)
+    date_added = db.Column(db.DateTime, default=datetime.utcnow)
+    date_edited = db.Column(db.DateTime, default=datetime.utcnow)
 
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'))
-    user = db.relationship('User',
-                           backref=db.backref('items', lazy='dynamic'))
+    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    user = db.relationship("User",
+                           backref=db.backref("items", lazy="dynamic"))
 
-    bucketlist_id = db.Column(db.Integer, db.ForeignKey('bucketlists.id'))
-    bucketlist = db.relationship('Bucketlist',
-                                 backref=db.backref('bucketlists',
-                                                    lazy='dynamic'))
+    bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlists.id"))
+    bucketlist = db.relationship("Bucketlist",
+                                 backref=db.backref("bucketlists",
+                                                    lazy="dynamic"))
 
     def __repr__(self):
-        return '<Bucketlist: %r>' % self.ref
+        return "<Bucketlist Item: %r>" % self.title
