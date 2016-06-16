@@ -15,7 +15,7 @@ auth = HTTPBasicAuth()
 def unauthorized(message=None):
     """
     Return 403 instead of 401 to prevent browsers from displaying the default
-    auth dialog
+    auth dialog.
     """
     if not message:
         message = "You are not authorized to access this page. Please log in"
@@ -28,8 +28,8 @@ def unauthorized(message=None):
 @app.before_request
 def before_request():
     """
-    Verify a user's password.
-    Returns true if the password is correct.
+    Validates token.
+    Is run before all requests apart from user login and registration.
     """
     if request.endpoint not in ["userlogin", "userregister"]:
         token = request.headers.get("Token")
@@ -48,7 +48,7 @@ def add_item(**kwargs):
     Add a user, bucketlist, or bucketlist item to the database.
     Also handles integrity errors.
     Arguments:
-        kwargs["name"]: The title of the item to be added to the db.
+        kwargs["name"]: The title of the item to be added to the database.
         kwargs["item"]: The item to be added to the database.
         kwargs["serializer"]: The marshal serializer.
         kwargs["is_user"]: The flag used to identify users.
@@ -67,7 +67,7 @@ def add_item(**kwargs):
 
         message = {"Message": "You have successfully registered a new " +
                    item_type + "."}
-        response = marshal(kwargs['item'], kwargs['serializer'])
+        response = marshal(kwargs["item"], kwargs["serializer"])
         response.update(message)
         return response, 201
 
@@ -101,18 +101,45 @@ def delete_item(item, name, **kwargs):
         return {"Message": "You have successfully deleted the following " +
                 item_type + ": " + name}
     else:
-        return {"Message": "Unsuccessful. Please try again!"}
+        return {"Message": "The delete was unsuccessful. Please try again!"}
+
+
+def edit_item(**kwargs):
+    """
+    Edit a user, bucketlist, or bucketlist item.
+    Arguments:
+        kwargs["name"]: The title of the item to be edited.
+        kwargs["item"]: The item to be edited.
+        kwargs["serializer"]: The marshal serializer.
+        kwargs["is_user"]: The flag used to identify users.
+        kwargs["is_bucketlist"]: The flag used to identify bucketlists.
+        kwargs["is_item"]: The flag used to identify bucketlist items.
+    """
+    db.session.add(kwargs["item"])
+    db.session.commit()
+    if kwargs["is_user"]:
+        item_type = "user"
+    elif kwargs["is_bucketlist"]:
+        item_type = "bucketlist"
+    elif kwargs["is_item"]:
+        item_type = "bucketlist item"
+
+    message = {"Message": "You have successfully edited the " +
+               item_type + "."}
+    response = marshal(kwargs["item"], kwargs["serializer"])
+    response.update(message)
+    return response, 201
 
 
 class Index(Resource):
     """
     Manage responses to the index route.
     URL: /api/v1.0/
-    Request: GET
+    Request method: GET
     """
 
     def get(self):
-        """Return a welcome message"""
+        """ Return a welcome message """
         return {"Message": "Welcome to the Bucket List API. "
                 "Register a new user or login to get started!"}
 
@@ -121,7 +148,7 @@ class UserRegister(Resource):
     """
     Register a new user.
     URL: /api/v1.0/auth/register/
-    Request: POST
+    Request method: POST
     """
 
     def post(self):
@@ -151,7 +178,7 @@ class UserLogin(Resource):
     """
     Log a user in.
     URL: /api/v1.0/auth/login/
-    Request: POST
+    Request method: POST
     """
 
     def post(self):
@@ -182,13 +209,15 @@ class UserLogin(Resource):
 class BucketListsAPI(Resource):
     """
     URL: /api/v1.0/bucketlists/
-    Requests: GET, POST
+    Request methods: GET, POST
     """
     def get(self):
+        """ View all bucketlists belonging to the current user """
         bucketlists = Bucketlist.query.filter_by(user_id=g.user.id).all()
         return marshal(bucketlists, bucketlist_serializer), 201
 
     def post(self):
+        """ Add a bucketlist """
         parser = reqparse.RequestParser()
         parser.add_argument("title", required=True, help="No title provided.")
         parser.add_argument("description", type=str, default="")
@@ -208,15 +237,45 @@ class BucketListsAPI(Resource):
 class BucketListAPI(Resource):
     """
     URL: /api/v1.0/bucketlist/<id>
-    Requests: GET, PUT, DELETE
+    Request methods: GET, PUT, DELETE
     """
-    def get(self):
-        pass
+    def get(self, id):
+        """ View a bucketlist """
+        bucketlist = Bucketlist.query.get_or_404(id)
+        if bucketlist.user_id == g.user.id:
+            return marshal(bucketlist, bucketlist_serializer), 201
+        else:
+            return {"Message": "You do not have access to that bucketlist."}
 
-    def put(self):
-        pass
+    def put(self, id):
+        """ Edit a bucketlist """
+        bucketlist = Bucketlist.query.filter_by(id=id).first()
+        if bucketlist:
+            if bucketlist.user_id == g.user.id:
+                parser = reqparse.RequestParser()
+                parser.add_argument("title",
+                                    required=True,
+                                    help="No title provided.")
+                parser.add_argument("description", type=str, default="")
+                args = parser.parse_args()
+                title, description = args["title"], args["description"]
+                bucketlist.title = title
+                bucketlist.description = description
+                return edit_item(name="title",
+                                 item=bucketlist,
+                                 serializer=bucketlist_serializer,
+                                 is_user=False,
+                                 is_bucketlist=True,
+                                 is_item=False)
+            else:
+                return {"Message": "You do not have access "
+                        "to that bucketlist."}
+        else:
+            return {"Message": "The bucket list you are trying to edit "
+                    "does not exist. Please try again!"}
 
     def delete(self, id):
+        """ Delete a bucketlist """
         bucketlist = Bucketlist.query.filter_by(id=id).first()
         if bucketlist:
             return delete_item(bucketlist,
@@ -226,28 +285,50 @@ class BucketListAPI(Resource):
                                is_item=False)
         else:
             return {"Message": "The bucket list you are trying to delete "
-                    "no longer exists. Please try again!"}
+                    "does not exist. Please try again!"}
 
 
 class ItemsAPI(Resource):
     """
     URL: /api/v1.0/bucketlist/<id>/items/
-    Requests: GET, POST
+    Request methods: GET, POST
     """
     def get(self):
+        """ View all items in a bucketlist """
         pass
 
-    def post(self):
-        pass
+    def post(self, id):
+        """ Add a new items to a bucketlist """
+        parser = reqparse.RequestParser()
+        parser.add_argument("title", required=True, help="No title provided.")
+        parser.add_argument("description", type=str, default="")
+        args = parser.parse_args()
+        title, description = args["title"], args["description"]
+        item = Item(title=title,
+                    description=description,
+                    bucketlist_id=id,
+                    user_id=g.user.id)
+        return add_item(name="title",
+                        item=item,
+                        serializer=item_serializer,
+                        is_user=False,
+                        is_bucketlist=False,
+                        is_item=True)
 
 
 class ItemAPI(Resource):
     """
     URL: /api/v1.0/bucketlists/<id>/items/<item_id>
-    Requests: GET, PUT, DELETE
+    Request methods: GET, PUT, DELETE
     """
     def get(self):
+        """ View a bucketlist item """
+        pass
+
+    def put(self):
+        """ Edit a bucketlist item """
         pass
 
     def delete(self, id):
+        """ Delete a bucketlist item """
         pass
