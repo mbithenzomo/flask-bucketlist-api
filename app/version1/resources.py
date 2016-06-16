@@ -1,57 +1,59 @@
-from flask import g, make_response, request
+from flask import g, jsonify, request, Response
 from flask.ext.restful import Resource, marshal
 from flask.ext.httpauth import HTTPBasicAuth
 from flask_restful import reqparse
 from sqlalchemy.exc import IntegrityError
-
+from serializers import user_serializer, bucketlist_serializer, item_serializer
 from .. models import User, Bucketlist, Item
-from .. import db
-from serializers import bucketlist_serializer, item_serializer, user_serializer
+from .. import db, app
+
 
 auth = HTTPBasicAuth()
 
 
 @auth.error_handler
-def unauthorized():
+def unauthorized(message=None):
     """
     Return 403 instead of 401 to prevent browsers from displaying the default
     auth dialog
     """
-    return make_response({
-        "Message": "You are not authorized to access this page. "
-        "Please log in and try aagin."}), 403
+    if not message:
+        message = "You are not authorized to access this page. Please log in"
+        " and try aagin."
+    return jsonify({
+        "Message": message
+    }), 403
 
 
-@auth.verify_password
-def verify_password(token, password):
+@app.before_request
+def before_request():
     """
-    Verify a user"s password.
-
-    Args:
-        token:
-        password:
-    retuns:
-        True if the password is correct.
+    Verify a user's password.
+    Returns true if the password is correct.
     """
-    token = request.headers.get("Token")
-    if token is not None:
-        user = User.verify_auth_token(token)
-        if user:
-            g.user = user
-            return True
-    return False
+    if request.endpoint not in ["userlogin", "userregister"]:
+        token = request.headers.get("Token")
+        if token is not None:
+            user = User.verify_auth_token(token)
+            if user:
+                g.user = user
+            else:
+                return unauthorized("The token you have entered is invalid.")
+        else:
+            return unauthorized("Please enter a token.")
 
 
 def add_item(**kwargs):
     """
     Add a user, bucketlist, or bucketlist item to the database.
+    Also handles integrity errors.
     Arguments:
         kwargs["name"]: The title of the item to be added to the db.
         kwargs["item"]: The item to be added to the database.
         kwargs["serializer"]: The marshal serializer.
-        kwargs["is_user"]: The flag is used to identify users.
-        kwargs["is_bucketlist"]: The flag is used to identify bucketlists.
-        kwargs["is_item"]: The flag is used to identify bucketlist items.
+        kwargs["is_user"]: The flag used to identify users.
+        kwargs["is_bucketlist"]: The flag used to identify bucketlists.
+        kwargs["is_item"]: The flag used to identify bucketlist items.
     """
     try:
         db.session.add(kwargs["item"])
@@ -62,8 +64,12 @@ def add_item(**kwargs):
             item_type = "bucketlist"
         elif kwargs["is_item"]:
             item_type = "bucketlist item"
-        return {"Message": "You have successfully registered a new " +
-                item_type + "."}
+
+        message = {"Message": "You have successfully registered a new " +
+                   item_type + "."}
+        response = marshal(kwargs['item'], kwargs['serializer'])
+        response.update(message)
+        return response, 201
 
     except IntegrityError:
         """When adding an item that already exists"""
@@ -102,7 +108,7 @@ class Index(Resource):
     """
     Manage responses to the index route.
     URL: /api/v1.0/
-    Method: GET
+    Request: GET
     """
 
     def get(self):
@@ -115,7 +121,7 @@ class UserRegister(Resource):
     """
     Register a new user.
     URL: /api/v1.0/auth/register/
-    Method: POST
+    Request: POST
     """
 
     def post(self):
@@ -135,17 +141,17 @@ class UserRegister(Resource):
                     password=password)
         return add_item(name="username",
                         item=user,
+                        serializer=user_serializer,
                         is_user=True,
                         is_bucketlist=False,
-                        is_item=False,
-                        serializer=user_serializer)
+                        is_item=False)
 
 
 class UserLogin(Resource):
     """
     Log a user in.
     URL: /api/v1.0/auth/login/
-    Method: POST
+    Request: POST
     """
 
     def post(self):
@@ -176,11 +182,11 @@ class UserLogin(Resource):
 class BucketListsAPI(Resource):
     """
     URL: /api/v1.0/bucketlists/
-    Methods: GET, POST
+    Requests: GET, POST
     """
-    @auth.login_required
     def get(self):
-        pass
+        bucketlists = Bucketlist.query.filter_by(user_id=g.user.id).all()
+        return marshal(bucketlists, bucketlist_serializer), 201
 
     def post(self):
         parser = reqparse.RequestParser()
@@ -189,29 +195,27 @@ class BucketListsAPI(Resource):
         args = parser.parse_args()
         title, description = args["title"], args["description"]
         bucketlist = Bucketlist(title=title,
-                                description=description)
+                                description=description,
+                                user_id=g.user.id)
         return add_item(name="title",
                         item=bucketlist,
+                        serializer=bucketlist_serializer,
                         is_user=False,
                         is_bucketlist=True,
-                        is_item=False,
-                        serializer=bucketlist_serializer)
+                        is_item=False)
 
 
 class BucketListAPI(Resource):
     """
     URL: /api/v1.0/bucketlist/<id>
-    Methods: GET, PUT, DELETE
+    Requests: GET, PUT, DELETE
     """
-    @auth.login_required
     def get(self):
         pass
 
-    @auth.login_required
     def put(self):
         pass
 
-    # @auth.login_required
     def delete(self, id):
         bucketlist = Bucketlist.query.filter_by(id=id).first()
         if bucketlist:
@@ -228,13 +232,11 @@ class BucketListAPI(Resource):
 class ItemsAPI(Resource):
     """
     URL: /api/v1.0/bucketlist/<id>/items/
-    Methods: GET, POST
+    Requests: GET, POST
     """
-    @auth.login_required
     def get(self):
         pass
 
-    @auth.login_required
     def post(self):
         pass
 
@@ -242,12 +244,10 @@ class ItemsAPI(Resource):
 class ItemAPI(Resource):
     """
     URL: /api/v1.0/bucketlists/<id>/items/<item_id>
-    Methods: GET, PUT, DELETE
+    Requests: GET, PUT, DELETE
     """
-    @auth.login_required
     def get(self):
         pass
 
-    @auth.login_required
     def delete(self, id):
         pass
