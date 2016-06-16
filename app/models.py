@@ -69,7 +69,7 @@ class Bucketlist(db.Model):
     __tablename__ = "bucketlists"
 
     id = db.Column(db.Integer, primary_key=True)
-    title = db.Column(db.String(70))
+    title = db.Column(db.String(70), unique=True,)
     description = db.Column(db.Text)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
     date_edited = db.Column(db.DateTime, default=datetime.utcnow)
