@@ -72,7 +72,7 @@ class Bucketlist(db.Model):
     title = db.Column(db.String(70))
     description = db.Column(db.Text)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    date_edited = db.Column(db.DateTime, default=datetime.utcnow)
+    last_edited = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",
