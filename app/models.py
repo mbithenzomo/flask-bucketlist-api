@@ -92,7 +92,7 @@ class Item(db.Model):
     description = db.Column(db.Text)
     is_done = db.Column(db.Boolean, default=False)
     date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    date_edited = db.Column(db.DateTime, default=datetime.utcnow)
+    last_edited = db.Column(db.DateTime, default=datetime.utcnow)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",
