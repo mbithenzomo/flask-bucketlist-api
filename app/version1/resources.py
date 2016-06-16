@@ -241,11 +241,16 @@ class BucketListAPI(Resource):
     """
     def get(self, id):
         """ View a bucketlist """
-        bucketlist = Bucketlist.query.get_or_404(id)
-        if bucketlist.user_id == g.user.id:
-            return marshal(bucketlist, bucketlist_serializer), 201
+        bucketlist = Bucketlist.query.get(id)
+        if bucketlist:
+            if bucketlist.user_id == g.user.id:
+                return marshal(bucketlist, bucketlist_serializer), 201
+            else:
+                return {"Message":
+                        "You do not have access to that bucket list."}
         else:
-            return {"Message": "You do not have access to that bucketlist."}
+            return {"Message": "The bucket list specified does not exist. "
+                    "Please try again!"}
 
     def put(self, id):
         """ Edit a bucketlist """
@@ -269,7 +274,7 @@ class BucketListAPI(Resource):
                                  is_item=False)
             else:
                 return {"Message": "You do not have access "
-                        "to that bucketlist."}
+                        "to that bucket list."}
         else:
             return {"Message": "The bucket list you are trying to edit "
                     "does not exist. Please try again!"}
@@ -321,13 +326,50 @@ class ItemAPI(Resource):
     URL: /api/v1.0/bucketlists/<id>/items/<item_id>
     Request methods: GET, PUT, DELETE
     """
-    def get(self):
+    def get(self, id, item_id):
         """ View a bucketlist item """
-        pass
+        bucketlist = Bucketlist.query.get(id)
+        if bucketlist:
+            item = Item.query.get(item_id)
+            if item:
+                if item.user_id == g.user.id:
+                    return marshal(item, item_serializer), 201
+                else:
+                    return {"Message": "You do not have access to that bucket "
+                            "list item."}
+            else:
+                return {"Message": "The bucket list item specified does not "
+                        "exist. Please try again!"}
+        else:
+            return {"Message": "The bucket list specified does not exist. "
+                    "Please try again!"}
 
-    def put(self):
+    def put(self, item_id):
         """ Edit a bucketlist item """
-        pass
+        item = Bucketlist.query.filter_by(id=item_id).first()
+        if item:
+            if item.user_id == g.user.id:
+                parser = reqparse.RequestParser()
+                parser.add_argument("title",
+                                    required=True,
+                                    help="No title provided.")
+                parser.add_argument("description", type=str, default="")
+                args = parser.parse_args()
+                title, description = args["title"], args["description"]
+                item.title = title
+                item.description = description
+                return edit_item(name="title",
+                                 item=item,
+                                 serializer=item_serializer,
+                                 is_user=False,
+                                 is_bucketlist=False,
+                                 is_item=True)
+            else:
+                return {"Message": "You do not have access "
+                        "to that bucketlist item."}
+        else:
+            return {"Message": "The bucket list you are trying to edit "
+                    "does not exist. Please try again!"}
 
     def delete(self, id):
         """ Delete a bucketlist item """
