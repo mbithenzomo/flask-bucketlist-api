@@ -1,5 +1,9 @@
 from flask_restful import fields
 
+"""
+Defining how users, bucketlists, and bucketlist items are represented
+"""
+
 item_serializer = {
     "id": fields.Integer,
     "title": fields.String,
@@ -14,7 +18,7 @@ bucketlist_serializer = {
     "title": fields.String,
     "description": fields.String,
     "items": fields.Nested(item_serializer),
-    "created_by": fields.Integer,
+    "user_id": fields.Integer,
     "date_added": fields.DateTime,
     "date_edited": fields.DateTime
 }
