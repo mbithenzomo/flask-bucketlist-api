@@ -71,8 +71,9 @@ class Bucketlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(70))
     description = db.Column(db.Text)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    last_edited = db.Column(db.DateTime, default=datetime.utcnow)
+    date_added = db.Column(db.DateTime, default=datetime.now)
+    last_edited = db.Column(db.DateTime,
+                            onupdate=datetime.now)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",
@@ -91,8 +92,9 @@ class Item(db.Model):
     title = db.Column(db.String(70))
     description = db.Column(db.Text)
     is_done = db.Column(db.Boolean, default=False)
-    date_added = db.Column(db.DateTime, default=datetime.utcnow)
-    last_edited = db.Column(db.DateTime, default=datetime.utcnow)
+    date_added = db.Column(db.DateTime, default=datetime.now)
+    last_edited = db.Column(db.DateTime,
+                            onupdate=datetime.now)
 
     user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",
