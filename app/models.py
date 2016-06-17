@@ -71,11 +71,11 @@ class Bucketlist(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(70))
     description = db.Column(db.Text)
-    date_added = db.Column(db.DateTime, default=datetime.now)
-    last_edited = db.Column(db.DateTime,
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    date_modified = db.Column(db.DateTime,
                             onupdate=datetime.now)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",
                            backref=db.backref("users", lazy="dynamic"))
 
@@ -92,11 +92,11 @@ class Item(db.Model):
     title = db.Column(db.String(70))
     description = db.Column(db.Text)
     is_done = db.Column(db.Boolean, default=False)
-    date_added = db.Column(db.DateTime, default=datetime.now)
-    last_edited = db.Column(db.DateTime,
+    date_created = db.Column(db.DateTime, default=datetime.now)
+    date_modified = db.Column(db.DateTime,
                             onupdate=datetime.now)
 
-    user_id = db.Column(db.Integer, db.ForeignKey("users.id"))
+    created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",
                            backref=db.backref("items", lazy="dynamic"))
 
