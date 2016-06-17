@@ -4,7 +4,6 @@ from datetime import datetime
 from itsdangerous import (TimedJSONWebSignatureSerializer
                           as Serializer, BadSignature, SignatureExpired)
 from . import db, app
-# from app.version1.resources import app
 
 
 class User(UserMixin, db.Model):
@@ -73,7 +72,7 @@ class Bucketlist(db.Model):
     description = db.Column(db.Text)
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime,
-                            onupdate=datetime.now)
+                              onupdate=datetime.now)
 
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",
@@ -94,7 +93,7 @@ class Item(db.Model):
     is_done = db.Column(db.Boolean, default=False)
     date_created = db.Column(db.DateTime, default=datetime.now)
     date_modified = db.Column(db.DateTime,
-                            onupdate=datetime.now)
+                              onupdate=datetime.now)
 
     created_by = db.Column(db.Integer, db.ForeignKey("users.id"))
     user = db.relationship("User",

@@ -9,8 +9,10 @@ item_serializer = {
     "title": fields.String,
     "description": fields.String,
     "is_done": fields.Boolean,
-    "date_added": fields.DateTime,
-    "date_edited": fields.DateTime
+    "date_created": fields.DateTime,
+    "date_modified": fields.DateTime,
+    "created_by": fields.Integer,
+    "bucketlist_id": fields.Integer
 }
 
 bucketlist_serializer = {
@@ -18,9 +20,9 @@ bucketlist_serializer = {
     "title": fields.String,
     "description": fields.String,
     "items": fields.Nested(item_serializer),
-    "user_id": fields.Integer,
-    "date_added": fields.DateTime,
-    "date_edited": fields.DateTime
+    "created_by": fields.Integer,
+    "date_created": fields.DateTime,
+    "date_modified": fields.DateTime
 }
 
 user_serializer = {

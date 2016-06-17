@@ -1,8 +1,10 @@
-from app.version1.resources import Index, UserLogin, UserRegister, \
-    BucketListsAPI, BucketListAPI, ItemsAPI, ItemAPI
+from app.resources.base import Index
+from app.resources.auth import UserLogin, UserRegister
+from app.resources.bucketlists import BucketListsAPI, BucketListAPI
+from app.resources.items import ItemsAPI, ItemAPI
 from app import api, app
 
-""" Defining the API resources """
+""" Defining the API endpoints """
 api.add_resource(Index, '/')
 api.add_resource(UserLogin, '/auth/login/')
 api.add_resource(UserRegister, '/auth/register/')
