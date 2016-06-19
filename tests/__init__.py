@@ -3,7 +3,7 @@ import nose
 from flask_testing import TestCase
 from app import db
 from run import app
-from app.models import User, Bucketlist
+from app.models import User, Bucketlist, Item
 from config.config import app_config
 
 
@@ -28,9 +28,20 @@ class TestBase(TestCase):
         bucketlist2 = Bucketlist(title="Adventures",
                                  description="Awesome adventures to go on",
                                  created_by=1)
+        item1 = Item(title="Learn to Cook",
+                     description="Cook at least 10 different meals",
+                     created_by=1,
+                     bucketlist_id=1)
+        item2 = Item(title="Swim with Dolphins",
+                     description="Go swimming with dolphins in Watamu",
+                     created_by=1,
+                     bucketlist_id=2)
+
         db.session.add(user)
         db.session.add(bucketlist1)
         db.session.add(bucketlist2)
+        db.session.add(item1)
+        db.session.add(item2)
         db.session.commit()
 
     def test_index(self):

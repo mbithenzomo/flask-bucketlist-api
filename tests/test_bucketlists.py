@@ -61,6 +61,7 @@ class TestBucketlists(TestBase):
         output = json.loads(request.data)
         self.assertTrue("You have successfully deleted the following "
                         "bucket list" in output["Message"])
+        self.assertTrue("Knowledge Goals" in output["Message"])
 
     def test_edit_bucketlist(self):
         """ Test editing of bucket lists """
@@ -77,7 +78,7 @@ class TestBucketlists(TestBase):
         self.assertIn(self.bucketlist["description"], request.data)
 
     def test_get_bucketlists(self):
-        """ Test that bucket lists are displayed """
+        """ Test that all bucket lists are displayed """
         request = self.app.get("/api/v1.0/bucketlists/",
                                headers=self.get_token())
         self.assertEqual(request.status_code, 201)
