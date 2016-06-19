@@ -30,6 +30,7 @@ class TestingConfig(Config):
     SQLALCHEMY_DATABASE_URI = "sqlite:///" + \
         os.path.join(basedir, "test.db")
     SQLALCHEMY_TRACK_MODIFICATIONS = False
+    SECRET_KEY = "p9Bv<3Eid9%$i01"
 
 
 class ProductionConfig(Config):

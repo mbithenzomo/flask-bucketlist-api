@@ -27,7 +27,7 @@ def before_request():
     Validates token.
     Is run before all requests apart from user login and registration.
     """
-    if request.endpoint not in ["userlogin", "userregister"]:
+    if request.endpoint not in ["userlogin", "userregister", "index"]:
         token = request.headers.get("Token")
         if token is not None:
             user = User.verify_auth_token(token)
