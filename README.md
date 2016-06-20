@@ -1,6 +1,7 @@
+[![Build Status](https://travis-ci.org/andela-mnzomo/flask-bucketlist-api.svg?branch=develop)](https://travis-ci.org/andela-mnzomo/flask-bucketlist-api)
+[![Coverage Status](https://coveralls.io/repos/github/andela-mnzomo/flask-bucketlist-api/badge.svg?branch=develop)](https://coveralls.io/github/andela-mnzomo/flask-bucketlist-api?branch=develop)
 ![alt text](https://img.shields.io/badge/python-2.7-blue.svg)
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)]()
-[![Coverage Status](https://coveralls.io/repos/github/andela-mnzomo/flask-bucketlist-api/badge.svg?branch=develop)](https://coveralls.io/github/andela-mnzomo/flask-bucketlist-api?branch=develop)
 
 # Flask Bucket List API
 According to the [Oxford Dictionary](http://www.oxforddictionaries.com/definition/english/bucket-list),
