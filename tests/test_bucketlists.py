@@ -82,8 +82,10 @@ class TestBucketlists(TestBase):
         request = self.app.get("/api/v1.0/bucketlists/",
                                headers=self.get_token())
         self.assertEqual(request.status_code, 201)
-        bucketlist1 = json.loads(request.data)[0]
-        bucketlist2 = json.loads(request.data)[1]
+        output = json.loads(request.data)
+        output = output["bucketlists"]
+        bucketlist1 = output[0]
+        bucketlist2 = output[1]
         # Both bucket lists are displayed
         self.assertEqual(bucketlist1.get("title"), "Knowledge Goals")
         self.assertEqual(bucketlist2.get("title"), "Adventures")
@@ -118,4 +120,29 @@ class TestBucketlists(TestBase):
 
     def test_unauthorized_access(self):
         """ Test that users cannot access another user's bucket lists """
-        
+        # Register a new user and obtain their token
+        self.user = {"username": "testuser3",
+                     "password": "testpassword"}
+        request = self.app.post("/api/v1.0/auth/register/",
+                                data=self.user)
+        request = self.app.post("/api/v1.0/auth/login/",
+                                data=self.user)
+        output = json.loads(request.data)
+        token = output.get("Token").encode("ascii")
+        token = {"Token": token}
+
+        # No bucket lists are displayed
+        request = self.app.get("/api/v1.0/bucketlists/",
+                               headers=token)
+        self.assertEqual(request.status_code, 404)
+        output = json.loads(request.data)
+        self.assertTrue("You have no bucket lists. Add a new one and try again"
+                        in output["Message"])
+
+        # Attempt to get another user's bucket list
+        request = self.app.get("/api/v1.0/bucketlists/1",
+                               headers=token)
+        self.assertEqual(request.status_code, 403)
+        output = json.loads(request.data)
+        self.assertTrue("Error: You are not authorized to access this resource"
+                        in output["Message"])
