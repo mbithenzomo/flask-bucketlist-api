@@ -1,4 +1,4 @@
-from flask import g
+from flask import g, request
 from flask.ext.restful import Resource, marshal
 from flask_restful import reqparse
 from .. serializers.serializers import bucketlist_serializer
@@ -13,12 +13,22 @@ class BucketListsAPI(Resource):
     """
     def get(self):
         """ Get all bucket lists belonging to the current user """
-        bucketlists = Bucketlist.query.filter_by(created_by=g.user.id).all()
+
+        search = request.args.get("q")
+        if search:
+            bucketlists = Bucketlist.query.filter_by(
+                                title=search, created_by=g.user.id).all()
+            error_message = {"Message": "There are no results for the search "
+                             "term specified."}
+        else:
+            bucketlists = Bucketlist.query.filter_by(
+                                created_by=g.user.id).all()
+            error_message = {"Message": "You have no bucket lists. Add a "
+                             "new one and try again!"}
         if bucketlists:
             return marshal(bucketlists, bucketlist_serializer), 201
         else:
-            return {"Message": "You have no bucket lists. Add a new one and "
-                    "try again!"}
+            return error_message
 
     def post(self):
         """ Add a bucket list """
