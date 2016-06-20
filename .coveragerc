@@ -1,0 +1,9 @@
+[report]
+omit=
+    */python?.?/*
+    *site-packages/*
+    *site-packages/nose/*
+    *docopt.py*
+    *docopt*
+    *__init__*
+    *tests/*
