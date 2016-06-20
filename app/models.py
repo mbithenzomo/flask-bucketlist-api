@@ -78,12 +78,15 @@ class Bucketlist(db.Model):
     user = db.relationship("User",
                            backref=db.backref("users", lazy="dynamic"))
 
+    items = db.relationship("Item",
+                            backref=db.backref("bucketlist"))
+
     def __repr__(self):
         return "<Bucketlist: %r>" % self.title
 
 
 class Item(db.Model):
-    """ Creates bucketlist item """
+    """ Creates items item """
 
     __tablename__ = "items"
 
@@ -100,9 +103,6 @@ class Item(db.Model):
                            backref=db.backref("items", lazy="dynamic"))
 
     bucketlist_id = db.Column(db.Integer, db.ForeignKey("bucketlists.id"))
-    bucketlist = db.relationship("Bucketlist",
-                                 backref=db.backref("bucketlists",
-                                                    lazy="dynamic"))
 
     def __repr__(self):
         return "<Bucketlist Item: %r>" % self.title
