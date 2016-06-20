@@ -10,7 +10,7 @@ to have or accomplish during their lifetime*.
 
 This is an API for an online Bucket List service using `Flask`.
 
-## Installation
+## Installation and Set Up
 Clone the repo from GitHub:
 ```
 git clone https://github.com/andela-mnzomo/flask-bucketlist-api
@@ -31,10 +31,21 @@ Install the required packages:
 pip install -r requirements.txt
 ```
 
-## Launching the Program
-Run ```python run.py```
+Initialize, migrate, and upgrade the database:
+```
+python manage.py db init
+```
+```
+python manage.py db migrate
+```
+```
+python manage.py db upgrade
+```
 
-## API Resources
+## Launching the Program
+Run ```python run.py```. You may use [Postman](https://chrome.google.com/webstore/detail/postman/fhbjgbiflinjbdggehcddcbncdddomop?hl=en) for Google Chrome to run the API.
+
+## API Endpoints
 
 | Resource URL | Methods | Description |
 | -------- | ------------- | --------- |
@@ -44,7 +55,7 @@ Run ```python run.py```
 | `/api/v1.0/bucketlists/` | GET, POST | A user's bucket lists |
 | `/api/v1.0/bucketlists/<id>/` | GET, PUT, DELETE | A single bucket list |
 | `/api/v1.0/bucketlists/<id>/items/` | GET, POST | Items in a bucket list |
-| GET `/api/v1.0/bucketlists/<id>/items/<item_id>/` | GET, PUT, DELETE| A single bucket list item|
+| `/api/v1.0/bucketlists/<id>/items/<item_id>/` | GET, PUT, DELETE| A single bucket list item|
 
 | Method | Description |
 |------- | ----------- |
