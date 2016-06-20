@@ -108,3 +108,36 @@ class TestItems(TestBase):
         self.assertEqual(request.status_code, 201)
         bucketlist1 = json.loads(request.data)
         self.assertEqual(bucketlist1.get("title"), "Swim with Dolphins")
+
+    def test_get_nonexistent_item(self):
+        """
+        Test that specifying a bucket list item with invalid id
+        will throw an error
+        """
+        request = self.app.get("/api/v1.0/bucketlists/1/items/200",
+                               headers=self.get_token())
+        self.assertEqual(request.status_code, 403)
+        output = json.loads(request.data)
+        self.assertTrue("The bucket list item specified does not exist. "
+                        "Please try again!" in output["Message"])
+
+    def test_unauthorized_access(self):
+        """ Test that users cannot access another user's bucket list items """
+        # Register a new user and obtain their token
+        self.user = {"username": "testuser3",
+                     "password": "testpassword"}
+        request = self.app.post("/api/v1.0/auth/register/",
+                                data=self.user)
+        request = self.app.post("/api/v1.0/auth/login/",
+                                data=self.user)
+        output = json.loads(request.data)
+        token = output.get("Token").encode("ascii")
+        token = {"Token": token}
+
+        # Attempt to get another user's bucket list item
+        request = self.app.get("/api/v1.0/bucketlists/1/items/1",
+                               headers=token)
+        self.assertEqual(request.status_code, 403)
+        output = json.loads(request.data)
+        self.assertTrue("Error: You are not authorized to access this resource"
+                        in output["Message"])
