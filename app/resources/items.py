@@ -73,8 +73,8 @@ class ItemAPI(Resource):
                 else:
                     return unauthorized()
             else:
-                return {"Message": "The bucket list item specified does not "
-                        "exist. Please try again!"}
+                return unauthorized("Error: The bucket list item specified "
+                                    "does not exist. Please try again!")
         else:
             return unauthorized("Error: The bucket list specified does not "
                                 "exist. Please try again!")
