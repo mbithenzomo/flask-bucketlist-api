@@ -96,7 +96,7 @@ def delete_item(item, name, **kwargs):
         elif kwargs["is_item"]:
             item_type = "bucket list item"
         return {"Message": "You have successfully deleted the following " +
-                item_type + ": " + name}
+                item_type + ": '" + name + "'."}
     else:
         return {"Message": "The delete was unsuccessful. Please try again!"}
 

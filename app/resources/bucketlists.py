@@ -12,23 +12,57 @@ class BucketListsAPI(Resource):
     Request methods: GET, POST
     """
     def get(self):
-        """ Get all bucket lists belonging to the current user """
+        """
+        Get all bucket lists belonging to the current user.
+        Implements search and pagination.
+        """
 
-        search = request.args.get("q")
+        args = request.args.to_dict()
+        page = int(args.get("page", 1))
+        limit = int(args.get("limit", 20))
+        search = args.get("q")
+
         if search:
-            bucketlists = Bucketlist.query.filter_by(
-                                title=search, created_by=g.user.id).all()
-            error_message = {"Message": "There are no results for the search "
-                             "term specified."}
+            search_result = Bucketlist.query.filter_by(
+                                title=search, created_by=g.user.id).paginate(
+                                page, limit, False).items
+            if search_result:
+                return marshal(search_result, bucketlist_serializer), 201
+            else:
+                return {"Message": "The bucketlist '" + search + "' does "
+                        "not exist."}, 404
+
+        bucketlists = Bucketlist.query.filter_by(
+                            created_by=g.user.id).paginate(
+                            page=page, per_page=limit, error_out=False)
+        error_message = {"Message": "You have no bucket lists. Add a "
+                         "new one and try again!"}
+        page_count = bucketlists.pages
+        has_next = bucketlists.has_next
+        has_previous = bucketlists.has_prev
+        if has_next:
+            next_page = str(request.url_root) + "api/v1.0/bucketlists?" + \
+                "limit=" + str(limit) + "&page=" + str(page + 1)
         else:
-            bucketlists = Bucketlist.query.filter_by(
-                                created_by=g.user.id).all()
-            error_message = {"Message": "You have no bucket lists. Add a "
-                             "new one and try again!"}
+            next_page = "None"
+        if has_previous:
+            previous_page = request.url_root + "api/v1.0/bucketlists?" + \
+                "limit=" + str(limit) + "&page=" + str(page - 1)
+        else:
+            previous_page = "None"
+        bucketlists = bucketlists.items
+
+        output = {"bucketlists": marshal(bucketlists, bucketlist_serializer),
+                  "has_next": has_next,
+                  "page_count": page_count,
+                  "previous_page": previous_page,
+                  "next_page": next_page
+                  }
+
         if bucketlists:
-            return marshal(bucketlists, bucketlist_serializer), 201
+            return output, 201
         else:
-            return error_message
+            return error_message, 404
 
     def post(self):
         """ Add a bucket list """
@@ -55,10 +89,12 @@ class BucketListAPI(Resource):
     """
     def get(self, id):
         """ Get a bucket list """
-        bucketlist = Bucketlist.query.filter_by(id=id,
-                                                created_by=g.user.id).first()
+        bucketlist = Bucketlist.query.filter_by(id=id).first()
         if bucketlist:
-            return marshal(bucketlist, bucketlist_serializer), 201
+            if bucketlist.created_by == g.user.id:
+                return marshal(bucketlist, bucketlist_serializer), 201
+            else:
+                return unauthorized()
         else:
             return unauthorized("Error: The bucket list specified does not "
                                 "exist. Please try again!")
