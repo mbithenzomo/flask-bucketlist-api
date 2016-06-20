@@ -1,5 +1,6 @@
 [![Build Status](https://travis-ci.org/andela-mnzomo/flask-bucketlist-api.svg?branch=develop)](https://travis-ci.org/andela-mnzomo/flask-bucketlist-api)
 [![Coverage Status](https://coveralls.io/repos/github/andela-mnzomo/flask-bucketlist-api/badge.svg?branch=develop)](https://coveralls.io/github/andela-mnzomo/flask-bucketlist-api?branch=develop)
+[![Code Health](https://landscape.io/github/andela-mnzomo/flask-bucketlist-api/develop/landscape.svg?style=flat)](https://landscape.io/github/andela-mnzomo/flask-bucketlist-api/develop)
 ![alt text](https://img.shields.io/badge/python-2.7-blue.svg)
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)]()
 
@@ -34,11 +35,7 @@ pip install -r requirements.txt
 Initialize, migrate, and upgrade the database:
 ```
 python manage.py db init
-```
-```
 python manage.py db migrate
-```
-```
 python manage.py db upgrade
 ```
 
@@ -47,15 +44,15 @@ Run ```python run.py```. You may use [Postman](https://chrome.google.com/webstor
 
 ## API Endpoints
 
-| Resource URL | Methods | Description |
-| -------- | ------------- | --------- |
-| `/api/v1.0/` | GET  | The index |
-| `/api/v1.0/auth/register/` | POST  | User registration |
-|  `/api/v1.0/auth/login/` | POST | User login|
-| `/api/v1.0/bucketlists/` | GET, POST | A user's bucket lists |
-| `/api/v1.0/bucketlists/<id>/` | GET, PUT, DELETE | A single bucket list |
-| `/api/v1.0/bucketlists/<id>/items/` | GET, POST | Items in a bucket list |
-| `/api/v1.0/bucketlists/<id>/items/<item_id>/` | GET, PUT, DELETE| A single bucket list item|
+| Resource URL | Methods | Description | Requires Token |
+| -------- | ------------- | --------- |--------------- |
+| `/api/v1.0/` | GET  | The index | FALSE |
+| `/api/v1.0/auth/register/` | POST  | User registration | FALSE |
+|  `/api/v1.0/auth/login/` | POST | User login | FALSE |
+| `/api/v1.0/bucketlists/` | GET, POST | A user's bucket lists | TRUE |
+| `/api/v1.0/bucketlists/<id>/` | GET, PUT, DELETE | A single bucket list | TRUE |
+| `/api/v1.0/bucketlists/<id>/items/` | GET, POST | Items in a bucket list | TRUE |
+| `/api/v1.0/bucketlists/<id>/items/<item_id>/` | GET, PUT, DELETE| A single bucket list item | TRUE |
 
 | Method | Description |
 |------- | ----------- |
