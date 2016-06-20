@@ -103,3 +103,19 @@ class TestBucketlists(TestBase):
         self.assertEqual(request.status_code, 201)
         bucketlist1 = json.loads(request.data)
         self.assertEqual(bucketlist1.get("title"), "Adventures")
+
+    def test_get_nonexistent_bucketlist(self):
+        """
+        Test that specifying a bucket list with invalid id
+        will throw an error
+        """
+        request = self.app.get("/api/v1.0/bucketlists/200",
+                               headers=self.get_token())
+        self.assertEqual(request.status_code, 403)
+        output = json.loads(request.data)
+        self.assertTrue("The bucket list specified does not exist. "
+                        "Please try again!" in output["Message"])
+
+    def test_unauthorized_access(self):
+        """ Test that users cannot access another user's bucket lists """
+        
