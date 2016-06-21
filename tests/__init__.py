@@ -46,9 +46,9 @@ class TestBase(TestCase):
 
     def test_index(self):
         """ Test response to the index route """
-        request = self.app.get("/api/v1.0/")
-        self.assertEqual(request.status_code, 200)
-        output = json.loads(request.data)
+        response = self.app.get("/api/v1.0/")
+        self.assertEqual(response.status_code, 200)
+        output = json.loads(response.data)
         self.assertEqual(output, {"Message": "Welcome to the Bucket List API. "
                                   "Register a new user or login to get "
                                   "started!"})
