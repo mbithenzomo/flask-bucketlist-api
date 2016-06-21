@@ -27,10 +27,10 @@ class BucketListsAPI(Resource):
                                 title=search, created_by=g.user.id).paginate(
                                 page, limit, False).items
             if search_result:
-                return marshal(search_result, bucketlist_serializer), 201
+                return marshal(search_result, bucketlist_serializer)
             else:
                 return {"Message": "The bucketlist '" + search + "' does "
-                        "not exist."}, 404
+                        "not exist."}
 
         bucketlists = Bucketlist.query.filter_by(
                             created_by=g.user.id).paginate(
@@ -60,9 +60,9 @@ class BucketListsAPI(Resource):
                   }
 
         if bucketlists:
-            return output, 201
+            return output
         else:
-            return error_message, 404
+            return error_message
 
     def post(self):
         """ Add a bucket list """
@@ -92,11 +92,11 @@ class BucketListAPI(Resource):
         bucketlist = Bucketlist.query.filter_by(id=id).first()
         if bucketlist:
             if bucketlist.created_by == g.user.id:
-                return marshal(bucketlist, bucketlist_serializer), 201
+                return marshal(bucketlist, bucketlist_serializer)
             else:
                 return unauthorized()
         else:
-            return unauthorized("Error: The bucket list specified does not "
+            return unauthorized("Error: The bucket list specified doesn't "
                                 "exist. Please try again!")
 
     def put(self, id):
@@ -123,7 +123,7 @@ class BucketListAPI(Resource):
                 return unauthorized()
         else:
             return unauthorized("Error: The bucket list you are trying to "
-                                "edit does not exist. Please try again!")
+                                "edit doesn't exist. Please try again!")
 
     def delete(self, id):
         """ Delete a bucket list """
@@ -139,4 +139,4 @@ class BucketListAPI(Resource):
                 return unauthorized()
         else:
             return unauthorized("Error: The bucket list you are trying to "
-                                "delete does not exist. Please try again!")
+                                "delete doesn't exist. Please try again!")

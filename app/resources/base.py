@@ -35,9 +35,9 @@ def before_request():
                 g.user = user
             else:
                 return unauthorized("Error: The token you have entered is "
-                                    "invalid.")
+                                    "invalid."), 401
         else:
-            return unauthorized("Error: Please enter a token.")
+            return unauthorized("Error: Please enter a token."), 401
 
 
 def add_item(**kwargs):
@@ -125,7 +125,7 @@ def edit_item(**kwargs):
                item_type + "."}
     response = marshal(kwargs["item"], kwargs["serializer"])
     response.update(message)
-    return response, 201
+    return response
 
 
 class Index(Resource):
