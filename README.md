@@ -17,7 +17,7 @@ Clone the repo from GitHub:
 git clone https://github.com/andela-mnzomo/flask-bucketlist-api
 ```
 
-Fetch from the features-review branch:
+Fetch from the develop branch:
 ```
 git fetch origin develop
 ```
