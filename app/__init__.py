@@ -14,4 +14,4 @@ def create_app(configuration):
     return app
 
 app = create_app("development")
-api = Api(app=app, prefix="/api/v1.0")
+api = Api(app=app, prefix="/api/v1")

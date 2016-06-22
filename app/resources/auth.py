@@ -8,7 +8,7 @@ from base import unauthorized, add_item
 class UserRegister(Resource):
     """
     Register a new user.
-    URL: /api/v1.0/auth/register/
+    URL: /api/v1/auth/register/
     Request method: POST
     """
 
@@ -38,7 +38,7 @@ class UserRegister(Resource):
 class UserLogin(Resource):
     """
     Log a user in.
-    URL: /api/v1.0/auth/login/
+    URL: /api/v1/auth/login/
     Request method: POST
     """
 

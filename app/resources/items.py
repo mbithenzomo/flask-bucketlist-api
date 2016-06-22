@@ -8,7 +8,7 @@ from base import unauthorized, add_item, delete_item, edit_item
 
 class ItemsAPI(Resource):
     """
-    URL: /api/v1.0/bucketlists/<id>/items/
+    URL: /api/v1/bucketlists/<id>/items/
     Request methods: GET, POST
     """
     def get(self, id):
@@ -58,7 +58,7 @@ class ItemsAPI(Resource):
 
 class ItemAPI(Resource):
     """
-    URL: /api/v1.0/bucketlists/<id>/items/<item_id>
+    URL: /api/v1/bucketlists/<id>/items/<item_id>
     Request methods: GET, PUT, DELETE
     """
     def get(self, id, item_id):

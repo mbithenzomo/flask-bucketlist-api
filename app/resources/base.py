@@ -127,7 +127,7 @@ def edit_item(**kwargs):
 class Index(Resource):
     """
     Manage responses to the index route.
-    URL: /api/v1.0/
+    URL: /api/v1/
     Request method: GET
     """
 

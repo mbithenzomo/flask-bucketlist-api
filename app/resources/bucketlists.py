@@ -8,7 +8,7 @@ from .. models import Bucketlist
 
 class BucketListsAPI(Resource):
     """
-    URL: /api/v1.0/bucketlists/
+    URL: /api/v1/bucketlists/
     Request methods: GET, POST
     """
     def get(self):
@@ -84,7 +84,7 @@ class BucketListsAPI(Resource):
 
 class BucketListAPI(Resource):
     """
-    URL: /api/v1.0/bucketlists/<id>
+    URL: /api/v1/bucketlists/<id>
     Request methods: GET, PUT, DELETE
     """
     def get(self, id):

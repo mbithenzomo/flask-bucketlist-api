@@ -9,7 +9,7 @@ class TestAuth(TestBase):
         """ Test user registration """
         self.user = {"username": "testuser2",
                      "password": "testpassword"}
-        response = self.app.post("/api/v1.0/auth/register/",
+        response = self.app.post("/api/v1/auth/register/",
                                  data=self.user)
         self.assertEqual(response.status_code, 201)
         output = json.loads(response.data)
@@ -21,7 +21,7 @@ class TestAuth(TestBase):
         """ Test user login """
         self.user = {"username": "testuser",
                      "password": "testpassword"}
-        response = self.app.post("/api/v1.0/auth/login/",
+        response = self.app.post("/api/v1/auth/login/",
                                  data=self.user)
         self.assertEqual(response.status_code, 200)
         output = json.loads(response.data)
@@ -32,7 +32,7 @@ class TestAuth(TestBase):
         """ Test that users cannot login with invalid credentials """
         self.user = {"username": "invalid",
                      "password": "testpassword"}
-        response = self.app.post("/api/v1.0/auth/login/",
+        response = self.app.post("/api/v1/auth/login/",
                                  data=self.user)
         self.assertEqual(response.status_code, 403)
         output = json.loads(response.data)
@@ -41,7 +41,7 @@ class TestAuth(TestBase):
 
         self.user = {"username": "testuser",
                      "password": "invalid"}
-        response = self.app.post("/api/v1.0/auth/login/",
+        response = self.app.post("/api/v1/auth/login/",
                                  data=self.user)
         self.assertEqual(response.status_code, 403)
         output = json.loads(response.data)
