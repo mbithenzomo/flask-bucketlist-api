@@ -12,8 +12,8 @@ class TestItems(TestBase):
         response = self.app.post("/api/v1.0/auth/login/",
                                  data=self.user)
         output = json.loads(response.data)
-        token = output.get("Token").encode("ascii")
-        return {"Token": token}
+        token = output.get("token").encode("ascii")
+        return {"token": token}
 
     def test_no_token(self):
         """ Test that users must provide a token to make responses """
@@ -24,20 +24,20 @@ class TestItems(TestBase):
         self.assertEqual(response.status_code, 401)
         output = json.loads(response.data)
         self.assertTrue("Error: Please enter a token"
-                        in output["Message"])
+                        in output["message"])
 
     def test_invalid_token(self):
         """ Test that invalid tokens cannot be used """
         self.item = {"title": "Learn to dive",
                      "description": "Dive from 20 metres"}
-        invalid_token = {"Token": 12345}
+        invalid_token = {"token": 12345}
         response = self.app.post("/api/v1.0/bucketlists/2/items/",
                                  data=self.item,
                                  headers=invalid_token)
         self.assertEqual(response.status_code, 401)
         output = json.loads(response.data)
         self.assertTrue("Error: The token you have entered is invalid"
-                        in output["Message"])
+                        in output["message"])
 
     def test_add_item(self):
         """ Test addition of bucket list items """
@@ -49,7 +49,7 @@ class TestItems(TestBase):
         self.assertEqual(response.status_code, 201)
         output = json.loads(response.data)
         self.assertTrue("You have successfully added a new bucket list item"
-                        in output["Message"])
+                        in output["message"])
         self.assertIn(self.item["title"], response.data)
         self.assertIn(self.item["description"], response.data)
 
@@ -60,8 +60,8 @@ class TestItems(TestBase):
         self.assertEqual(response.status_code, 200)
         output = json.loads(response.data)
         self.assertTrue("You have successfully deleted the following "
-                        "bucket list" in output["Message"])
-        self.assertTrue("Learn to Cook" in output["Message"])
+                        "bucket list" in output["message"])
+        self.assertTrue("Learn to Cook" in output["message"])
 
     def test_edit_item(self):
         """ Test editing of bucket list items """
@@ -73,7 +73,7 @@ class TestItems(TestBase):
         self.assertEqual(response.status_code, 200)
         output = json.loads(response.data)
         self.assertTrue("You have successfully edited the bucket list item"
-                        in output["Message"])
+                        in output["message"])
         self.assertIn(self.item["title"], response.data)
         self.assertIn(self.item["description"], response.data)
 
@@ -119,7 +119,7 @@ class TestItems(TestBase):
         self.assertEqual(response.status_code, 403)
         output = json.loads(response.data)
         self.assertTrue("The bucket list item specified does not exist. "
-                        "Please try again!" in output["Message"])
+                        "Please try again!" in output["message"])
 
     def test_unauthorized_access(self):
         """ Test that users cannot access another user's bucket list items """
@@ -131,8 +131,8 @@ class TestItems(TestBase):
         response = self.app.post("/api/v1.0/auth/login/",
                                  data=self.user)
         output = json.loads(response.data)
-        token = output.get("Token").encode("ascii")
-        token = {"Token": token}
+        token = output.get("token").encode("ascii")
+        token = {"token": token}
 
         # Attempt to get another user's bucket list item
         response = self.app.get("/api/v1.0/bucketlists/1/items/1",
@@ -140,4 +140,4 @@ class TestItems(TestBase):
         self.assertEqual(response.status_code, 403)
         output = json.loads(response.data)
         self.assertTrue("Error: You are not authorized to access this resource"
-                        in output["Message"])
+                        in output["message"])

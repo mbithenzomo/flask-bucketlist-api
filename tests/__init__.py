@@ -49,7 +49,7 @@ class TestBase(TestCase):
         response = self.app.get("/api/v1.0/")
         self.assertEqual(response.status_code, 200)
         output = json.loads(response.data)
-        self.assertEqual(output, {"Message": "Welcome to the Bucket List API. "
+        self.assertEqual(output, {"message": "Welcome to the Bucket List API. "
                                   "Register a new user or login to get "
                                   "started!"})
 

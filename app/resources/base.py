@@ -17,7 +17,7 @@ def unauthorized(message=None):
     if not message:
         message = "Error: You are not authorized to access this resource."
     return jsonify({
-        "Message": message
+        "message": message
     }), 403
 
 
@@ -28,7 +28,7 @@ def before_request():
     Is run before all requests apart from user registration, login and index.
     """
     if request.endpoint not in ["userlogin", "userregister", "index"]:
-        token = request.headers.get("Token")
+        token = request.headers.get("token")
         if token is not None:
             user = User.verify_auth_token(token)
             if user:
@@ -62,7 +62,7 @@ def add_item(**kwargs):
         elif kwargs["is_item"]:
             item_type = "bucket list item"
 
-        message = {"Message": "You have successfully added a new " +
+        message = {"message": "You have successfully added a new " +
                    item_type + "."}
         response = marshal(kwargs["item"], kwargs["serializer"])
         response.update(message)
@@ -93,10 +93,10 @@ def delete_item(item, name, **kwargs):
             item_type = "bucket list"
         elif kwargs["is_item"]:
             item_type = "bucket list item"
-        return {"Message": "You have successfully deleted the following " +
+        return {"message": "You have successfully deleted the following " +
                 item_type + ": '" + name + "'."}
     else:
-        return {"Message": "The delete was unsuccessful. Please try again!"}
+        return {"message": "The delete was unsuccessful. Please try again!"}
 
 
 def edit_item(**kwargs):
@@ -117,7 +117,7 @@ def edit_item(**kwargs):
     elif kwargs["is_item"]:
         item_type = "bucket list item"
 
-    message = {"Message": "You have successfully edited the " +
+    message = {"message": "You have successfully edited the " +
                item_type + "."}
     response = marshal(kwargs["item"], kwargs["serializer"])
     response.update(message)
@@ -133,5 +133,5 @@ class Index(Resource):
 
     def get(self):
         """ Return a welcome message """
-        return {"Message": "Welcome to the Bucket List API. "
+        return {"message": "Welcome to the Bucket List API. "
                 "Register a new user or login to get started!"}

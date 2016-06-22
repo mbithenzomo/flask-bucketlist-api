@@ -14,7 +14,7 @@ class TestAuth(TestBase):
         self.assertEqual(response.status_code, 201)
         output = json.loads(response.data)
         self.assertTrue("You have successfully added a new user"
-                        in output["Message"])
+                        in output["message"])
         self.assertIn(self.user["username"], response.data)
 
     def test_login(self):
@@ -26,7 +26,7 @@ class TestAuth(TestBase):
         self.assertEqual(response.status_code, 200)
         output = json.loads(response.data)
         self.assertTrue("You have successfully logged in"
-                        in output["Message"])
+                        in output["message"])
 
     def test_invalid_credentials(self):
         """ Test that users cannot login with invalid credentials """
@@ -37,7 +37,7 @@ class TestAuth(TestBase):
         self.assertEqual(response.status_code, 403)
         output = json.loads(response.data)
         self.assertTrue("Error: Incorrect username and/or password."
-                        in output["Message"])
+                        in output["message"])
 
         self.user = {"username": "testuser",
                      "password": "invalid"}
@@ -46,4 +46,4 @@ class TestAuth(TestBase):
         self.assertEqual(response.status_code, 403)
         output = json.loads(response.data)
         self.assertTrue("Error: Incorrect username and/or password."
-                        in output["Message"])
+                        in output["message"])

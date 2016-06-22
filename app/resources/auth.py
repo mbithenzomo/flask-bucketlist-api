@@ -58,12 +58,12 @@ class UserLogin(Resource):
         if username and password:
             user = User.query.filter_by(username=username).first()
         else:
-            return {"Message": "Error: Please enter a username and password."}
+            return {"message": "Error: Please enter a username and password."}
         if user and user.verify_password(password):
             token = user.generate_auth_token()
-            return {"Message": "You have successfully logged in. Use the "
+            return {"message": "You have successfully logged in. Use the "
                     "token below to make requests.",
-                    "Token": token.decode("ascii")}
+                    "token": token.decode("ascii")}
         else:
             return unauthorized("Error: Incorrect username and/or password. "
                                 "Please try again!")

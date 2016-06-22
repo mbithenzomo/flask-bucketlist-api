@@ -29,13 +29,13 @@ class BucketListsAPI(Resource):
             if search_result:
                 return marshal(search_result, bucketlist_serializer)
             else:
-                return {"Message": "The bucketlist '" + search + "' does "
+                return {"message": "The bucketlist '" + search + "' does "
                         "not exist."}
 
         bucketlists = Bucketlist.query.filter_by(
                             created_by=g.user.id).paginate(
                             page=page, per_page=limit, error_out=False)
-        error_message = {"Message": "You have no bucket lists. Add a "
+        error_message = {"message": "You have no bucket lists. Add a "
                          "new one and try again!"}
         page_count = bucketlists.pages
         has_next = bucketlists.has_next

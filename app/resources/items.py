@@ -19,7 +19,7 @@ class ItemsAPI(Resource):
                 items = Item.query.filter_by(bucketlist_id=id).all()
                 if items:
                     return marshal(items, item_serializer)
-                return {"Message": "The bucket list sepcified has no items. "
+                return {"message": "The bucket list sepcified has no items. "
                         "Add one and try again!"}
             else:
                 return unauthorized()
@@ -106,7 +106,7 @@ class ItemAPI(Resource):
                 else:
                     return unauthorized()
             else:
-                return {"Message": "The bucket list item you are trying to "
+                return {"message": "The bucket list item you are trying to "
                         "edit does not exist. Please try again!"}
         else:
             return unauthorized("Error: The bucket list specified does not "
@@ -128,7 +128,7 @@ class ItemAPI(Resource):
                 else:
                     return unauthorized()
             else:
-                return {"Message": "The bucket list item you are trying to "
+                return {"message": "The bucket list item you are trying to "
                         "delete does not exist. Please try again!"}
         else:
             return unauthorized("Error: The bucket list specified does not "
