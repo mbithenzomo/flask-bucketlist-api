@@ -118,7 +118,7 @@ class TestItems(TestBase):
                                 headers=self.get_token())
         self.assertEqual(response.status_code, 403)
         output = json.loads(response.data)
-        self.assertTrue("The bucket list item specified does not exist. "
+        self.assertTrue("The bucket list item specified doesn't exist. "
                         "Please try again!" in output["message"])
 
     def test_unauthorized_access(self):
@@ -133,6 +133,14 @@ class TestItems(TestBase):
         output = json.loads(response.data)
         token = output.get("token").encode("ascii")
         token = {"token": token}
+
+        # No bucket list items are displayed
+        response = self.app.get("/api/v1/bucketlists/1/items/",
+                                headers=token)
+        self.assertEqual(response.status_code, 403)
+        output = json.loads(response.data)
+        self.assertTrue("You are not authorized to access this resource"
+                        in output["message"])
 
         # Attempt to get another user's bucket list item
         response = self.app.get("/api/v1/bucketlists/1/items/1",
