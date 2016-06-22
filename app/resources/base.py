@@ -71,7 +71,7 @@ def add_item(**kwargs):
     except IntegrityError:
         """When adding an item that already exists"""
         db.session.rollback()
-        return {"Error": "The " + kwargs["name"] +
+        return {"error": "The " + kwargs["name"] +
                 " that you tried to enter already exists."}
 
 
