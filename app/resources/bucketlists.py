@@ -78,7 +78,6 @@ class BucketListsAPI(Resource):
 
 
 def authorized_user(function):
-
     def auth_wrapper(*args, **kwargs):
         g.bucketlist = Bucketlist.query.filter_by(id=kwargs["id"]).first()
         try:
