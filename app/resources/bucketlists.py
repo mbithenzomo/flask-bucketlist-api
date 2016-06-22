@@ -21,22 +21,17 @@ class BucketListsAPI(Resource):
         page = int(args.get("page", 1))
         limit = int(args.get("limit", 20))
         search = args.get("q")
+        kwargs = {"created_by": g.user.id}
 
         if search:
-            search_result = Bucketlist.query.filter_by(
-                                title=search, created_by=g.user.id).paginate(
-                                page, limit, False).items
-            if search_result:
-                return marshal(search_result, bucketlist_serializer)
-            else:
-                return {"message": "The bucketlist '" + search + "' does "
-                        "not exist."}
-
-        bucketlists = Bucketlist.query.filter_by(
-                            created_by=g.user.id).paginate(
-                            page=page, per_page=limit, error_out=False)
-        error_message = {"message": "You have no bucket lists. Add a "
-                         "new one and try again!"}
+            kwargs.update({"title": search})
+            error_message = {"message": "The bucketlist '" + search + "' does "
+                                        "not exist."}
+        else:
+            error_message = {"message": "You have no bucket lists. Add a "
+                             "new one and try again!"}
+        bucketlists = Bucketlist.query.filter_by(**kwargs).paginate(
+                             page=page, per_page=limit, error_out=False)
         page_count = bucketlists.pages
         has_next = bucketlists.has_next
         has_previous = bucketlists.has_prev
