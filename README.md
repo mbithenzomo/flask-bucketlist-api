@@ -9,7 +9,7 @@ According to the [Oxford Dictionary](http://www.oxforddictionaries.com/definitio
 a *bucket list* is a *number of experiences or achievements that a person hopes
 to have or accomplish during their lifetime*.
 
-This is an API for an online Bucket List service using `Flask`.
+This is a RESTful API for an online Bucket List service using `Flask`.
 
 ## Installation and Set Up
 Clone the repo from GitHub:
@@ -61,8 +61,24 @@ Run ```python run.py```. You may use [Postman](https://chrome.google.com/webstor
 | PUT | Updates an existing resource |
 | DELETE | Deletes an existing resource |
 
+## Sample Requests
+
+To register a new user:
+![User Registration](https://github.com/andela-mnzomo/flask-bucketlist-api/blob/develop/app/screenshots/register.png)
+
+To log the user in:
+![User Login](https://github.com/andela-mnzomo/flask-bucketlist-api/blob/develop/app/screenshots/login.png)
+
+To add a new bucket list (includes the token in the header):
+![Adding Bucket List](https://github.com/andela-mnzomo/flask-bucketlist-api/blob/develop/app/screenshots/add_bucketlist.png)
+
 ## Testing
 To test, run the following command: ```nosetests```
+
+## Built With...
+* [Flask](http://flask.pocoo.org/)
+* [Flask-RESTful](http://flask-restful-cn.readthedocs.io/en/0.3.4/)
+* [Flask-SQLAlchemy](http://flask-sqlalchemy.pocoo.org/2.1/)
 
 ## Credits
 
