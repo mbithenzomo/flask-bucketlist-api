@@ -86,7 +86,7 @@ class TestItems(TestBase):
                       headers=self.get_token())
         response = self.app.get("/api/v1.0/bucketlists/1/items/",
                                 headers=self.get_token())
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         bucketlist1 = json.loads(response.data)[0]
         bucketlist2 = json.loads(response.data)[1]
         # Both bucket list items are displayed
@@ -98,14 +98,14 @@ class TestItems(TestBase):
         # Get bucket list item whose ID is 1, and bucket list ID is 1
         response = self.app.get("/api/v1.0/bucketlists/1/items/1",
                                 headers=self.get_token())
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         bucketlist1 = json.loads(response.data)
         self.assertEqual(bucketlist1.get("title"), "Learn to Cook")
 
         # Get bucket list item whose ID is 2, and bucket list ID is 2
         response = self.app.get("/api/v1.0/bucketlists/2/items/2",
                                 headers=self.get_token())
-        self.assertEqual(response.status_code, 201)
+        self.assertEqual(response.status_code, 200)
         bucketlist1 = json.loads(response.data)
         self.assertEqual(bucketlist1.get("title"), "Swim with Dolphins")
 
