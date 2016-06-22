@@ -18,7 +18,7 @@ class ItemsAPI(Resource):
             if bucketlist.created_by == g.user.id:
                 items = Item.query.filter_by(bucketlist_id=id).all()
                 if items:
-                    return marshal(items, item_serializer), 201
+                    return marshal(items, item_serializer)
                 return {"Message": "The bucket list sepcified has no items. "
                         "Add one and try again!"}
             else:
@@ -69,7 +69,7 @@ class ItemAPI(Resource):
                                         id=item_id).first()
             if item:
                 if item.created_by == g.user.id:
-                    return marshal(item, item_serializer), 201
+                    return marshal(item, item_serializer)
                 else:
                     return unauthorized()
             else:
