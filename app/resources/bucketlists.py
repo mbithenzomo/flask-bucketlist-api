@@ -77,61 +77,54 @@ class BucketListsAPI(Resource):
                         is_item=False)
 
 
+def authorized_user(function):
+
+    def auth_wrapper(*args, **kwargs):
+        g.bucketlist = Bucketlist.query.filter_by(id=kwargs["id"]).first()
+        try:
+            if g.bucketlist.created_by == g.user.id:
+                return function(*args, **kwargs)
+            return unauthorized()
+        except AttributeError:
+            return unauthorized("Error: The bucket list specified doesn't "
+                                "exist. Please try again!")
+    return auth_wrapper
+
+
 class BucketListAPI(Resource):
     """
     URL: /api/v1/bucketlists/<id>
     Request methods: GET, PUT, DELETE
     """
+    @authorized_user
     def get(self, id):
         """ Get a bucket list """
-        bucketlist = Bucketlist.query.filter_by(id=id).first()
-        if bucketlist:
-            if bucketlist.created_by == g.user.id:
-                return marshal(bucketlist, bucketlist_serializer)
-            else:
-                return unauthorized()
-        else:
-            return unauthorized("Error: The bucket list specified doesn't "
-                                "exist. Please try again!")
+        return marshal(g.bucketlist, bucketlist_serializer)
 
+    @authorized_user
     def put(self, id):
         """ Edit a bucket list """
-        bucketlist = Bucketlist.query.filter_by(id=id).first()
-        if bucketlist:
-            if bucketlist.created_by == g.user.id:
-                parser = reqparse.RequestParser()
-                parser.add_argument("title",
-                                    required=True,
-                                    help="No title provided.")
-                parser.add_argument("description", type=str, default="")
-                args = parser.parse_args()
-                title, description = args["title"], args["description"]
-                bucketlist.title = title
-                bucketlist.description = description
-                return edit_item(name="title",
-                                 item=bucketlist,
-                                 serializer=bucketlist_serializer,
-                                 is_user=False,
-                                 is_bucketlist=True,
-                                 is_item=False)
-            else:
-                return unauthorized()
-        else:
-            return unauthorized("Error: The bucket list you are trying to "
-                                "edit doesn't exist. Please try again!")
+        parser = reqparse.RequestParser()
+        parser.add_argument("title",
+                            required=True,
+                            help="No title provided.")
+        parser.add_argument("description", type=str, default="")
+        args = parser.parse_args()
+        title, description = args["title"], args["description"]
+        g.bucketlist.title = title
+        g.bucketlist.description = description
+        return edit_item(name="title",
+                         item=g.bucketlist,
+                         serializer=bucketlist_serializer,
+                         is_user=False,
+                         is_bucketlist=True,
+                         is_item=False)
 
+    @authorized_user
     def delete(self, id):
         """ Delete a bucket list """
-        bucketlist = Bucketlist.query.filter_by(id=id).first()
-        if bucketlist:
-            if bucketlist.created_by == g.user.id:
-                return delete_item(bucketlist,
-                                   bucketlist.title,
-                                   is_user=False,
-                                   is_bucketlist=True,
-                                   is_item=False)
-            else:
-                return unauthorized()
-        else:
-            return unauthorized("Error: The bucket list you are trying to "
-                                "delete doesn't exist. Please try again!")
+        return delete_item(g.bucketlist,
+                           g.bucketlist.title,
+                           is_user=False,
+                           is_bucketlist=True,
+                           is_item=False)
