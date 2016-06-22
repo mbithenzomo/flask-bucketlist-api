@@ -25,7 +25,7 @@ def unauthorized(message=None):
 def before_request():
     """
     Validates token.
-    Is run before all requests apart from user login and registration.
+    Is run before all requests apart from user registration, login and index.
     """
     if request.endpoint not in ["userlogin", "userregister", "index"]:
         token = request.headers.get("Token")
@@ -42,7 +42,7 @@ def before_request():
 
 def add_item(**kwargs):
     """
-    Add a user, bucketlist, or bucketlist item to the database.
+    Add a user, bucket list, or bucket list item to the database.
     Also handles integrity errors.
     Arguments:
         kwargs["name"]: The title of the item to be added to the database.
@@ -77,7 +77,7 @@ def add_item(**kwargs):
 
 def delete_item(item, name, **kwargs):
     """
-    Delete a user, bucketlist, or bucketlist item from the database.
+    Delete a bucket list or bucket list item from the database.
 
     Arguments:
         item: The item to be deleted.
@@ -89,9 +89,7 @@ def delete_item(item, name, **kwargs):
     if item:
         db.session.delete(item)
         db.session.commit()
-        if kwargs["is_user"]:
-            item_type = "user"
-        elif kwargs["is_bucketlist"]:
+        if kwargs["is_bucketlist"]:
             item_type = "bucket list"
         elif kwargs["is_item"]:
             item_type = "bucket list item"
@@ -103,7 +101,7 @@ def delete_item(item, name, **kwargs):
 
 def edit_item(**kwargs):
     """
-    Edit a user, bucketlist, or bucketlist item.
+    Edit a bucket list or bucket list item.
     Arguments:
         kwargs["name"]: The title of the item to be edited.
         kwargs["item"]: The item to be edited.
@@ -114,9 +112,7 @@ def edit_item(**kwargs):
     """
     db.session.add(kwargs["item"])
     db.session.commit()
-    if kwargs["is_user"]:
-        item_type = "user"
-    elif kwargs["is_bucketlist"]:
+    if kwargs["is_bucketlist"]:
         item_type = "bucket list"
     elif kwargs["is_item"]:
         item_type = "bucket list item"
