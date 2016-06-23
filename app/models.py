@@ -1,4 +1,3 @@
-from flask.ext.login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 from datetime import datetime
 from itsdangerous import (TimedJSONWebSignatureSerializer
@@ -6,7 +5,7 @@ from itsdangerous import (TimedJSONWebSignatureSerializer
 from . import db, app
 
 
-class User(UserMixin, db.Model):
+class User(db.Model):
     """ Creates user """
 
     __tablename__ = "users"
