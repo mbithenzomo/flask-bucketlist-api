@@ -77,22 +77,6 @@ class TestItems(TestBase):
         self.assertIn(self.item["title"], response.data)
         self.assertIn(self.item["description"], response.data)
 
-    def test_get_items(self):
-        """ Test that all bucket list items are displayed """
-        self.item = {"title": "Play Piano",
-                     "description": "Learn to play at least 5 songs by heart"}
-        self.app.post("/api/v1/bucketlists/1/items/",
-                      data=self.item,
-                      headers=self.get_token())
-        response = self.app.get("/api/v1/bucketlists/1/items/",
-                                headers=self.get_token())
-        self.assertEqual(response.status_code, 200)
-        bucketlist1 = json.loads(response.data)[0]
-        bucketlist2 = json.loads(response.data)[1]
-        # Both bucket list items are displayed
-        self.assertEqual(bucketlist1.get("title"), "Learn to Cook")
-        self.assertEqual(bucketlist2.get("title"), "Play Piano")
-
     def test_get_item(self):
         """ Test that specified bucket list item is displayed """
         # Get bucket list item whose ID is 1, and bucket list ID is 1
@@ -133,14 +117,6 @@ class TestItems(TestBase):
         output = json.loads(response.data)
         token = output.get("token").encode("ascii")
         token = {"token": token}
-
-        # No bucket list items are displayed
-        response = self.app.get("/api/v1/bucketlists/1/items/",
-                                headers=token)
-        self.assertEqual(response.status_code, 403)
-        output = json.loads(response.data)
-        self.assertTrue("You are not authorized to access this resource"
-                        in output["message"])
 
         # Attempt to get another user's bucket list item
         response = self.app.get("/api/v1/bucketlists/1/items/1",
