@@ -2,7 +2,7 @@ from flask import g, jsonify, request
 from flask.ext.restful import Resource, marshal
 from flask.ext.httpauth import HTTPBasicAuth
 from sqlalchemy.exc import IntegrityError
-from .. models import User
+from .. models import User, Bucketlist, Item
 from .. import db, app
 
 
@@ -19,6 +19,33 @@ def unauthorized(message=None):
     return jsonify({
         "message": message
     }), 403
+
+
+def authorized_user_bucketlist(function):
+    def auth_wrapper(*args, **kwargs):
+        g.bucketlist = Bucketlist.query.filter_by(id=kwargs["id"]).first()
+        try:
+            if g.bucketlist.created_by == g.user.id:
+                return function(*args, **kwargs)
+            return unauthorized()
+        except:
+            return unauthorized("Error: The bucket list specified doesn't "
+                                "exist. Please try again!")
+    return auth_wrapper
+
+
+def authorized_user_item(function):
+    def auth_wrapper(*args, **kwargs):
+        g.item = Item.query.filter_by(bucketlist_id=kwargs["id"],
+                                      id=kwargs["item_id"]).first()
+        try:
+            if g.item.created_by == g.user.id:
+                return function(*args, **kwargs)
+            return unauthorized()
+        except:
+            return unauthorized("Error: The bucket list item specified "
+                                "doesn't exist. Please try again!")
+    return auth_wrapper
 
 
 @app.before_request

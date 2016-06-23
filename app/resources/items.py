@@ -3,34 +3,7 @@ from flask.ext.restful import Resource, marshal
 from flask_restful import reqparse
 from .. serializers.serializers import item_serializer
 from .. models import Bucketlist, Item
-from base import unauthorized, add_item, delete_item, edit_item
-
-
-def authorized_user_bucketlist(function):
-    def auth_wrapper(*args, **kwargs):
-        g.bucketlist = Bucketlist.query.filter_by(id=kwargs["id"]).first()
-        try:
-            if g.bucketlist.created_by == g.user.id:
-                return function(*args, **kwargs)
-            return unauthorized()
-        except:
-            return unauthorized("Error: The bucket list specified doesn't "
-                                "exist. Please try again!")
-    return auth_wrapper
-
-
-def authorized_user_item(function):
-    def auth_wrapper(*args, **kwargs):
-        g.item = Item.query.filter_by(bucketlist_id=kwargs["id"],
-                                      id=kwargs["item_id"]).first()
-        try:
-            if g.item.created_by == g.user.id:
-                return function(*args, **kwargs)
-            return unauthorized()
-        except:
-            return unauthorized("Error: The bucket list item specified "
-                                "doesn't exist. Please try again!")
-    return auth_wrapper
+from base import unauthorized, add_item, delete_item, edit_item, authorized_user_bucketlist, authorized_user_item
 
 
 class ItemsAPI(Resource):
@@ -38,15 +11,6 @@ class ItemsAPI(Resource):
     URL: /api/v1/bucketlists/<id>/items/
     Request methods: GET, POST
     """
-    @authorized_user_bucketlist
-    def get(self, id):
-        """ Get all items in a bucket list """
-        items = Item.query.filter_by(bucketlist_id=id).all()
-        try:
-            return marshal(items, item_serializer)
-        except:
-            return {"message": "The bucket list specified has no items. "
-                    "Add one and try again!"}
 
     def post(self, id):
         """ Add a new item to a bucket list """

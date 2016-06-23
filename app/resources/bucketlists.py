@@ -2,7 +2,7 @@ from flask import g, request
 from flask.ext.restful import Resource, marshal
 from flask_restful import reqparse
 from .. serializers.serializers import bucketlist_serializer
-from base import unauthorized, add_item, delete_item, edit_item
+from base import authorized_user_bucketlist, add_item, delete_item, edit_item
 from .. models import Bucketlist
 
 
@@ -77,30 +77,17 @@ class BucketListsAPI(Resource):
                         is_item=False)
 
 
-def authorized_user(function):
-    def auth_wrapper(*args, **kwargs):
-        g.bucketlist = Bucketlist.query.filter_by(id=kwargs["id"]).first()
-        try:
-            if g.bucketlist.created_by == g.user.id:
-                return function(*args, **kwargs)
-            return unauthorized()
-        except AttributeError:
-            return unauthorized("Error: The bucket list specified doesn't "
-                                "exist. Please try again!")
-    return auth_wrapper
-
-
 class BucketListAPI(Resource):
     """
     URL: /api/v1/bucketlists/<id>
     Request methods: GET, PUT, DELETE
     """
-    @authorized_user
+    @authorized_user_bucketlist
     def get(self, id):
         """ Get a bucket list """
         return marshal(g.bucketlist, bucketlist_serializer)
 
-    @authorized_user
+    @authorized_user_bucketlist
     def put(self, id):
         """ Edit a bucket list """
         parser = reqparse.RequestParser()
@@ -119,7 +106,7 @@ class BucketListAPI(Resource):
                          is_bucketlist=True,
                          is_item=False)
 
-    @authorized_user
+    @authorized_user_bucketlist
     def delete(self, id):
         """ Delete a bucket list """
         return delete_item(g.bucketlist,
