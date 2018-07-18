@@ -1,8 +1,7 @@
-[![Build Status](https://travis-ci.org/andela-mnzomo/flask-bucketlist-api.svg?branch=develop)](https://travis-ci.org/andela-mnzomo/flask-bucketlist-api)
-[![Coverage Status](https://coveralls.io/repos/github/andela-mnzomo/flask-bucketlist-api/badge.svg?branch=develop)](https://coveralls.io/github/andela-mnzomo/flask-bucketlist-api?branch=develop)
-[![Code Health](https://landscape.io/github/andela-mnzomo/flask-bucketlist-api/develop/landscape.svg?style=flat)](https://landscape.io/github/andela-mnzomo/flask-bucketlist-api/develop)
-![alt text](https://img.shields.io/badge/python-2.7-blue.svg)
-[![DUB](https://img.shields.io/dub/l/vibe-d.svg)]()
+[![Build Status](https://travis-ci.org/mbithenzomo/flask-bucketlist-api.svg?branch=develop)](https://travis-ci.org/mbithenzomo/flask-bucketlist-api)
+[![Coverage Status](https://coveralls.io/repos/github/mbithenzomo/flask-bucketlist-api/badge.svg?branch=develop)](https://coveralls.io/github/mbithenzomo/flask-bucketlist-api?branch=develop)
+[![Code Health](https://landscape.io/github/mbithenzomo/flask-bucketlist-api/develop/landscape.svg?style=flat)](https://landscape.io/github/mbithenzomo/flask-bucketlist-api/develop)
+![Python 2.7](https://img.shields.io/badge/python-2.7-blue.svg)
 
 # Flask Bucket List API
 According to the [Oxford Dictionary](http://www.oxforddictionaries.com/definition/english/bucket-list),
@@ -14,7 +13,7 @@ This is a RESTful API for an online Bucket List service using `Flask`.
 ## Installation and Set Up
 Clone the repo from GitHub:
 ```
-git clone https://github.com/andela-mnzomo/flask-bucketlist-api
+git clone https://github.com/mbithenzomo/flask-bucketlist-api
 ```
 
 Fetch from the develop branch:
@@ -64,13 +63,13 @@ Run ```python run.py```. You may use [Postman](https://chrome.google.com/webstor
 ## Sample Requests
 
 To register a new user:
-![User Registration](https://github.com/andela-mnzomo/flask-bucketlist-api/blob/develop/app/screenshots/register.png)
+![User Registration](https://github.com/mbithenzomo/flask-bucketlist-api/blob/develop/app/screenshots/register.png)
 
 To log the user in:
-![User Login](https://github.com/andela-mnzomo/flask-bucketlist-api/blob/develop/app/screenshots/login.png)
+![User Login](https://github.com/mbithenzomo/flask-bucketlist-api/blob/develop/app/screenshots/login.png)
 
 To add a new bucket list (includes the token in the header):
-![Adding Bucket List](https://github.com/andela-mnzomo/flask-bucketlist-api/blob/develop/app/screenshots/add_bucketlist.png)
+![Adding Bucket List](https://github.com/mbithenzomo/flask-bucketlist-api/blob/develop/app/screenshots/add_bucketlist.png)
 
 ## Testing
 To test, run the following command: ```nosetests```
@@ -82,7 +81,7 @@ To test, run the following command: ```nosetests```
 
 ## Credits and License
 
-Copyright (c) 2016 [Mbithe Nzomo](https://github.com/andela-mnzomo)
+Copyright (c) 2016 [Mbithe Nzomo](https://github.com/mbithenzomo)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy of this software and associated documentation files (the "Software"), to deal in the Software without restriction, including without limitation the rights to use, copy, modify, merge, publish, distribute, sublicense, and/or sell copies of the Software, and to permit persons to whom the Software is furnished to do so, subject to the following conditions:
 
